@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    // ECMAScript target
+    "target": "es2021",
+
+    // Add DOM so `fetch`, `URL`, etc. are typed
+    "lib": ["es2021", "DOM"],
+
+    // React JSX support (if you need it)
+    "jsx": "react-jsx",
+
+    // Keep modern ESM output
+    "module": "es2022",
+
+    // Use Node resolution semantics (so JSON imports resolve nicely)
+    "moduleResolution": "bundler",
+
+    // Allow you to `import config from "./config.json"`
+    "resolveJsonModule": true,
+
+    // Interop for CommonJS/ESM defaults
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    // Strict type checking
+    "strict": true,
+
+    // Skip type-checking of declaration files for speed
+    "skipLibCheck": true,
+
+    // No emitted JS (your bundler handles that)
+    "noEmit": true,
+
+    // Ensure every file is treated as a module
+    "isolatedModules": true,
+
+    // Enforce consistent file-naming casing
+    "forceConsistentCasingInFileNames": true,
+
+    // Include Node types (for Env, etc.)
+    "types": ["node"]
+  },
+  "include": [
+    "worker-configuration.d.ts",
+    "src/**/*.ts"
+  ]
+}
