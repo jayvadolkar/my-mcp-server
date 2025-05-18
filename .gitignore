@@ -6,6 +6,8 @@
 
 # Node modules
 /node_modules/
+/.Wrangler/
+/.vscode/
 
 # TypeScript build output
 /dist/
