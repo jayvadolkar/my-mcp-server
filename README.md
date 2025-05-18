@@ -1,4 +1,4 @@
- My MCP Server — Quickstart Guide body { font-family: Arial, sans-serif; max-width: 800px; margin: 2rem auto; line-height: 1.6; color: #333; } h1, h2, h3, h4 { color: #111; } pre { background: #f4f4f4; padding: 1rem; overflow-x: auto; } code { background: #f4f4f4; padding: .2rem .4rem; border-radius: 4px; } a.button { display: inline-block; margin: 1rem 0; padding: .6rem 1.2rem; background: #f38020; color: white; text-decoration: none; border-radius: 4px; } ul { margin-left: 1.2rem; } nav ol { margin-left: 1.2rem; }
+ My MCP Server — Quickstart Guide body 
 
 # 📦 My MCP Server
 
