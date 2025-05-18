@@ -1,12 +1,22 @@
-// src/tools/corehr/index.ts
-
+/**
+ * File: src/tools/corehr/index.ts
+ * 
+ * CoreHR Tools Registration Module
+ */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { registerGetAllEmployees } from "./getAllEmployees";
-// import { registerTool2 } from "./tool2";
-// import { registerTool3 } from "./tool3";
+import { registerCoreHrTools as registerGetAllEmployees } from "./getAllEmployees";
 
-export function registerCoreHrTools(server: McpServer) {
-  registerGetAllEmployees(server);
-  // registerTool2(server);
-  // registerTool3(server);
+/**
+ * Register all CoreHR tools with the MCP server.
+ */
+export function registerCoreHrTools(
+  server: McpServer, 
+  env: any, 
+  state: { activeTokens: Record<string, string> }
+): void {
+  // Register employee management tools
+  registerGetAllEmployees(server, env, state);
+  
+  // Log successful registration
+  console.log("All CoreHR tools registered successfully");
 }
