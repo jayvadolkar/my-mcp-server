@@ -1,260 +1,141 @@
-# Building a Remote MCP Server on Cloudflare (Without Auth)
+ My MCP Server — Quickstart Guide body { font-family: Arial, sans-serif; max-width: 800px; margin: 2rem auto; line-height: 1.6; color: #333; } h1, h2, h3, h4 { color: #111; } pre { background: #f4f4f4; padding: 1rem; overflow-x: auto; } code { background: #f4f4f4; padding: .2rem .4rem; border-radius: 4px; } a.button { display: inline-block; margin: 1rem 0; padding: .6rem 1.2rem; background: #f38020; color: white; text-decoration: none; border-radius: 4px; } ul { margin-left: 1.2rem; } nav ol { margin-left: 1.2rem; }
 
-This example allows you to deploy a remote MCP server that doesn't require authentication on Cloudflare Workers. 
+# 📦 My MCP Server
 
-## Get started: 
+**My MCP Server** is a no-ops, zero-server-maintenance API host that runs entirely on [Cloudflare Workers](https://workers.cloudflare.com). It wraps the Keka HRIS “getAllEmployees” endpoint (and more) behind a simple _Model Context Protocol_ interface.
 
-[![Deploy to Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/ai/tree/main/demos/remote-mcp-authless)
+[🚀 One-Click Deploy to Cloudflare Workers](https://dash.cloudflare.com/?to=/:account/workers/deploy?template=github.com/jayvadolkar/my-mcp-server)
 
-This will deploy your MCP server to a URL like: `remote-mcp-server-authless.<your-account>.workers.dev/sse`
+## Table of Contents
 
-Alternatively, you can use the command line below to get the remote MCP Server created on your local machine:
-```bash
-npm create cloudflare@latest -- my-mcp-server --template=cloudflare/ai/demos/remote-mcp-authless
+1.  [Overview](#overview)
+2.  [Prerequisites](#prerequisites)
+3.  [Setup & Installation](#setup)
+4.  [Running Locally](#local)
+5.  [Deploy to Production](#deploy)
+6.  [Usage & Endpoints](#usage)
+7.  [.gitignore](#gitignore)
+8.  [Support](#support)
+
+## 1\. Overview
+
+This project lets you host a fully-functional HRIS API server on Cloudflare in minutes—no servers to provision. It provides:
+
+*   Real-time **SSE** endpoint (`/sse`)
+*   Standard HTTP/MCP endpoint (`/mcp`)
+*   Tools like `getAllEmployees`, `ping`, and `checkEnv`
+
+## 2\. Prerequisites
+
+*   **Cloudflare account:** Sign up at [dash.cloudflare.com](https://dash.cloudflare.com/sign-up)
+*   **Wrangler CLI:** Install with `npm install -g wrangler`
+*   **Node.js & npm:** Version 18 or above ([nodejs.org](https://nodejs.org))
+*   **Git:** For cloning the repo ([git-scm.com](https://git-scm.com))
+
+## 3\. Setup & Installation
+
+### 3.1 Clone the Repository
+
+```
+git clone https://github.com/jayvadolkar/my-mcp-server.git
+cd my-mcp-server
 ```
 
-## Customizing your MCP Server
+### 3.2 Install Dependencies
 
-To add your own [tools](https://developers.cloudflare.com/agents/model-context-protocol/tools/) to the MCP server, define each tool inside the `init()` method of `src/index.ts` using `this.server.tool(...)`. 
+```
+npm install
+```
 
-## Connect to Cloudflare AI Playground
+### 3.3 Configure Environment Variables
 
-You can connect to your MCP server from the Cloudflare AI Playground, which is a remote MCP client:
+Create a file named `.dev.vars` in the project root. This file keeps your secrets safe and is _not_ checked into Git.
 
-1. Go to https://playground.ai.cloudflare.com/
-2. Enter your deployed MCP server URL (`remote-mcp-server-authless.<your-account>.workers.dev/sse`)
-3. You can now use your MCP tools directly from the playground!
+```dotenv
+.COMPANY="your-company"  
+.ENVIRONMENT="your-env"  
+.KEKA_GRANT_TYPE="kekaapi"  
+.KEKA_SCOPE="kekaapi"  
+.KEKA_CLIENT_ID="PASTE_CLIENT_ID_HERE"  
+.KEKA_CLIENT_SECRET="PASTE_CLIENT_SECRET_HERE"  
+.KEKA_API_KEY="PASTE_API_KEY_HERE"
+```
 
-## Connect Claude Desktop to your MCP server
+Wrangler will automatically load these when you run `wrangler dev`.
 
-You can also connect to your remote MCP server from local MCP clients, by using the [mcp-remote proxy](https://www.npmjs.com/package/mcp-remote). 
+### 3.4 Build the Project
 
-To connect to your MCP server from Claude Desktop, follow [Anthropic's Quickstart](https://modelcontextprotocol.io/quickstart/user) and within Claude Desktop go to Settings > Developer > Edit Config.
+```
+npm run build
+```
 
-Update with this configuration:
+## 4\. Running Locally
+
+Start a local preview of your Worker:
+
+```
+npm start
+```
+
+Open your browser at [http://127.0.0.1:8787](http://127.0.0.1:8787) You should see a JSON health check. To try the tools:
+
+*   **ping:**  
+    `curl -X POST http://127.0.0.1:8787/mcp \ -d '{"tool":"ping","args":{"message":"hello"}}'`
+*   **checkEnv:**  
+    `curl -X POST http://127.0.0.1:8787/mcp \ -d '{"tool":"checkEnv","args":{}}'`
+
+## 5\. Deploy to Production
+
+**Option A: One-Click Deploy**  
+Click the button at the top of this README to deploy instantly. You’ll be prompted to select your Cloudflare account and to confirm your new Worker.
+
+**Option B: Wrangler CLI**  
+If you prefer the terminal:
+
+```
+npx wrangler login
+npm run build
+npx wrangler publish
+```
+
+After publishing, your Worker will live at `https://<your-subdomain>.workers.dev`.
+
+## 6\. Usage & Endpoints
+
+### 6.1 Health Check (`GET /`)
+
+Returns JSON like:
 
 ```json
-{
-  "mcpServers": {
-    "calculator": {
-      "command": "npx",
-      "args": [
-        "mcp-remote",
-        "http://localhost:8787/sse"  // or remote-mcp-server-authless.your-account.workers.dev/sse
-      ]
-    }
-  }
+{  
+  "status":"running",
+  "name":"CoreHR API MCP Server",
+  "company":"your-company",
+  "environment":"your-env",
+  "endpoints":["/sse","/mcp"]  
 }
 ```
 
-Restart Claude and you should see the tools become available. 
+### 6.2 SSE Endpoint (`/sse`)
 
-# MyMCP Server
+Use a browser or SSE client to connect and receive live streams of tool results.
 
-A **ModelContextProtocol** (MCP) agent server that wraps Keka HRIS, Workforce, and other enterprise APIs behind simple, authenticated tools. You can deploy this on Cloudflare Workers (or any Node 18+ runtime) and call it via SSE or HTTP to invoke any of your registered “tools.”
+### 6.3 MCP HTTP (`POST /mcp`)
 
----
-
-## 📂 Repository Structure
-
-```
-my-mcp-server/
-├── src/
-│   ├── auth.ts               # OAuth token helper (env vs. defaults)
-│   ├── index.ts              # MCP agent setup & tool registration
-│   └── tools/                # All domain‐specific tools
-│       ├── corehr/
-│       │   ├── getAllEmployees.ts
-│       │   └── index.ts      # Registers CoreHR tools
-│       ├── workforce/
-│       │   ├── tool4.ts
-│       │   └── index.ts      # Registers Workforce tools
-│       └── …                 # Add more domains (payroll, benefits, etc.)
-├── package.json              # Dependencies & scripts
-├── tsconfig.json             # TypeScript configuration
-└── README.md                 # You are here!
-```
-
----
-
-## 🚀 Prerequisites
-
-* **Node.js 18+** (or Cloudflare Workers runtime)
-* **npm** or **yarn**
-* **Git** (for version control & GitHub)
-* *(Optional)* **Claude Desktop** or **MCP CLI** for local SSE testing
-
----
-
-## ⚙️ Installation & Setup
-
-1. **Clone the repo**
-
-   ```bash
-   git clone git@github.com:jayvadolkar1/my-mcp-server.git
-   cd my-mcp-server
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-
-3. **Configure your environment**
-
-   We use **environment variables** to drive all auth, endpoints, and domain logic. Create a `.env` file or export them in your shell:
-
-   ```bash
-   export COMPANY="my-company"
-   export ENVIRONMENT="dev"          # dev, staging, prod, etc.
-   export KEKA_GRANT_TYPE="kekaapi"
-   export KEKA_SCOPE="kekaapi"
-   export KEKA_CLIENT_ID="<your-client-id>"
-   export KEKA_CLIENT_SECRET="<your-client-secret>"
-   export KEKA_API_KEY="<your-api-key>"
-   export TOKEN_ENDPOINT="https://login.keka.com/connect/token"
-   export MCP_SERVER_URL="https://my-mcp-server.jayvadolkar1.workers.dev/sse"
-   ```
-
-   In **Claude Desktop** or your MCP CLI config, add under your server entry:
-
-   ```json
-   "env": {
-     "COMPANY":         "${COMPANY}",
-     "ENVIRONMENT":     "${ENVIRONMENT}",
-     "KEKA_GRANT_TYPE": "${KEKA_GRANT_TYPE}",
-     "KEKA_SCOPE":      "${KEKA_SCOPE}",
-     "KEKA_CLIENT_ID":  "${KEKA_CLIENT_ID}",
-     "KEKA_CLIENT_SECRET":"${KEKA_CLIENT_SECRET}",
-     "KEKA_API_KEY":    "${KEKA_API_KEY}",
-     "TOKEN_ENDPOINT":  "${TOKEN_ENDPOINT}"
-   }
-   ```
-
-4. **Build & run**
-
-   ```bash
-   npm run build   # compiles TS to JS
-   npm start       # or `node dist/index.js` in Node
-   ```
-
-   To deploy on Cloudflare Workers, configure `wrangler.toml` and run:
-
-   ```bash
-   npx wrangler publish
-   ```
-
----
-
-## 🔄 Switching Between Test & Production
-
-Every tool uses a boolean `useConfig` argument (default: `true`):
-
-* **`true`** → Read **all** credentials, endpoints, and domain values from your **environment variables**.
-* **`false`** → Fall back to built‑in **hard‑coded defaults** in `auth.ts`:
-
-  ```ts
-  {
-    environment:   "kekademo",
-    grant_type:    "kekaapi",
-    scope:         "kekaapi",
-    client_id:     "130e4b45-0a6a-4213-a056-07a48e51b717",
-    client_secret: "K4sMNMLVBr0UkQEDkCL4",
-    api_key:       "D1My8wefkHBUur_szeRNDsQ9crnRvXRMw_cM6vR2tlI=",
-    company:       "googleindia",
-  }
-  ```
-
-**Example invocation:**
+Example with `getAllEmployees`:
 
 ```json
-{
-  "name": "getAllEmployees",
-  "arguments": {
-    "useConfig": false,
-    "filters": { "pageNumber": 1, "pageSize": 50 }
-  }
+{  
+  "tool":"getAllEmployees",  
+  "args":{  
+    "filters":{ "searchKey":"john" }  
+  }  
 }
 ```
 
----
 
-## 🛠️ Adding New Tools
+## 8\. Support & Feedback
 
-1. **Create a new domain folder** under `src/tools/` (e.g. `payroll`, `benefits`).
-2. Inside it, add `index.ts` that exports a `registerXxxTools(server: McpServer)` function.
-3. Write each tool in its own `.ts` file, using `server.tool(name, schema, handler)`.
-4. In `src/index.ts`, import and call your new registrar in the `init()` method:
+Found an issue or need help? Open a GitHub Issue: [https://github.com/jayvadolkar/my-mcp-server/issues](https://github.com/jayvadolkar/my-mcp-server/issues)
 
-   ```ts
-   import { registerPayrollTools } from "./tools/payroll";
-   // …
-   async init() {
-     registerCoreHrTools(this.server);
-     registerWorkforceTools(this.server);
-     registerPayrollTools(this.server);
-   }
-   ```
-
----
-
-## 📡 Calling Your Tools
-
-### HTTP POST
-
-```http
-POST /mcp HTTP/1.1
-Host: localhost:8787
-Content-Type: application/json
-
-{
-  "name": "getAllEmployees",
-  "arguments": {
-    "useConfig": true,
-    "filters": { "searchKey": "erling Haland" }
-  }
-}
-```
-
-### SSE Stream
-
-```http
-// connect to /sse, then send JSON messages down-stream
-{ "name": "getAllEmployees", "arguments": { "useConfig": true, "filters": {} } }
-```
-
----
-
-## 🛡️ Pushing to GitHub
-
-1. **Initialize & commit**:
-
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   ```
-2. **Create a private repo** via `gh` or the web:
-
-   ```bash
-   gh repo create jayvadolkar1/my-mcp-server --private --source=. --push
-   ```
-3. **Keep your `.gitignore`** up-to-date (node\_modules, env files).
-
----
-
-## 🤝 Contributing
-
-1. Fork the repo.
-2. Create a feature branch: `git checkout -b feature/new-tool`.
-3. Commit your changes and `git push origin feature/new-tool`.
-4. Open a Pull Request.
-
-Please follow the existing folder & naming conventions. All tools must accept the `useConfig` flag and leverage `getAuthToken()`.
-
----
-
-Built with ❤️ by Jay. GG! Feel free to raise issues or improvements! 🚀
+Happy deploying! 🚀
