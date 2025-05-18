@@ -4,11 +4,11 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-  "name": "my-mcp-server",
-  "compatibility_date": "2025-05-18",
-  "main": "src/index.ts",
+  	"name": "my-mcp-server",
+  	"compatibility_date": "2025-05-18",
+  	"main": "src/index.ts",
 	"compatibility_flags": [
-		"nodejs_compat"
+		"nodejs_compat", "nodejs_compat_populate_process_env"
 	],
 	"migrations": [
 		{
@@ -30,13 +30,13 @@
 		"enabled": true
 	},
 	"vars": {
-    "COMPANY": "googleindia",
-    "ENVIRONMENT": "kekademo",
-    "KEKA_API_KEY": "D1My8wefkHBUur_szeRNDsQ9crnRvXRMw_cM6vR2tlI=",
-    "KEKA_CLIENT_ID": "130e4b45-0a6a-4213-a056-07a48e51b717",
-    "KEKA_CLIENT_SECRET": "K4sMNMLVBr0UkQEDkCL4",
-    "KEKA_GRANT_TYPE": "kekaapi",
-    "KEKA_SCOPE": "kekaapi"
+    	"COMPANY": "-give-your-company-name-",
+    	"ENVIRONMENT": "give-your-environment",
+    	"KEKA_API_KEY": "your-keka-api-key",
+    	"KEKA_CLIENT_ID": "your-keka-client-id",
+    	"KEKA_CLIENT_SECRET": "your-keka-client-secret",
+    	"KEKA_GRANT_TYPE": "kekaapi",
+    	"KEKA_SCOPE": "kekaapi"
   }
 	/**
 	 * Smart Placement

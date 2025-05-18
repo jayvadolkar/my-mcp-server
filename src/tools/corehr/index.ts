@@ -1,22 +1,43 @@
-/**
- * File: src/tools/corehr/index.ts
- * 
- * CoreHR Tools Registration Module
- */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { registerCoreHrTools as registerGetAllEmployees } from "./getAllEmployees";
+import { getAllEmployees, filtersSchema } from "./getAllEmployees";
+import { Env } from "../../index";
 
 /**
- * Register all CoreHR tools with the MCP server.
+ * Register all CoreHR tools with the MCP server
+ * @param server MCP server instance
+ * @param env Cloudflare Workers environment
  */
-export function registerCoreHrTools(
-  server: McpServer, 
-  env: any, 
-  state: { activeTokens: Record<string, string> }
-): void {
-  // Register employee management tools
-  registerGetAllEmployees(server, env, state);
-  
-  // Log successful registration
-  console.log("All CoreHR tools registered successfully");
+export function registerCoreHrTools(server: McpServer, env: Env) {
+  server.tool(
+    "getAllEmployees",
+    { filters: filtersSchema },
+    async ({ filters }) => {
+      try {
+        const employees = await getAllEmployees(env, filters);
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(employees, null, 2),
+            },
+          ],
+        };
+      } catch (error: unknown) {
+        console.error("Error in getAllEmployees tool:", error);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${
+                error instanceof Error ? error.message : "Unknown error"
+              }`,
+            },
+          ],
+          isError: true,
+        };
+      }
+    }
+  );
+
+  // register more tools here…
 }
