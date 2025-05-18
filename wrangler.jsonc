@@ -4,9 +4,9 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "my-mcp-server",
-	"main": "src/index.ts",
-	"compatibility_date": "2025-03-10",
+  "name": "my-mcp-server",
+  "compatibility_date": "2025-05-18",
+  "main": "src/index.ts",
 	"compatibility_flags": [
 		"nodejs_compat"
 	],
@@ -28,7 +28,16 @@
 	},
 	"observability": {
 		"enabled": true
-	}
+	},
+	"vars": {
+    "COMPANY": "googleindia",
+    "ENVIRONMENT": "kekademo",
+    "KEKA_API_KEY": "D1My8wefkHBUur_szeRNDsQ9crnRvXRMw_cM6vR2tlI=",
+    "KEKA_CLIENT_ID": "130e4b45-0a6a-4213-a056-07a48e51b717",
+    "KEKA_CLIENT_SECRET": "K4sMNMLVBr0UkQEDkCL4",
+    "KEKA_GRANT_TYPE": "kekaapi",
+    "KEKA_SCOPE": "kekaapi"
+  }
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

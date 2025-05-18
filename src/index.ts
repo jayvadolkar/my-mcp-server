@@ -3,13 +3,12 @@
  * 
  * Main entry point for the Keka HRIS MCP Server.
  */
+import { McpAgent } from "agents/mcp";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { registerCoreHrTools } from "./tools/corehr";
 import { z } from "zod";
 
-// Import tool registrars from their respective domain files
-import { registerCoreHrTools } from "./tools/corehr";
-
-// Define interface for environment variables
+// Define interface for environment variables 
 export interface Env {
   COMPANY: string;              
   ENVIRONMENT: string;          
@@ -20,41 +19,29 @@ export interface Env {
   KEKA_API_KEY: string;         
 }
 
-// Define the state interface
-export interface State {
-  activeTokens: Record<string, string>;
-}
+// Keep track of the latest environment variables
+let globalEnv: any = {};
 
-// Create the MyMCP class
-export class MyMCP {
-  server: McpServer;
-  env: Env;
-  state: State;
-  ctx: any;
+// Create the MyMCP class that extends McpAgent
+export class MyMCP extends McpAgent {
+  server = new McpServer({
+    name: "CoreHR API MCP Server",
+    version: "1.0.0",
+  });
   
-  constructor(env: Env, ctx: any) {
-    this.env = env;
-    this.ctx = ctx;
-    this.state = {
+  async init() {
+    console.log("Initializing CoreHR MCP Server...");
+    
+    // Use the current global environment
+    console.log("Environment for tools:", globalEnv);
+    
+    // Create state object for the tools
+    const state = {
       activeTokens: {}
     };
     
-    this.server = new McpServer({
-      name: "CoreHR API MCP Server",
-      version: "1.0.0",
-    });
-    
-    this.init();
-  }
-  
-  async init(): Promise<void> {
-    console.log("Initializing CoreHR MCP Server...");
-    
-    // Validate that all required environment variables are present
-    this.validateEnvironment();
-    
-    // Register all tools from different domains
-    registerCoreHrTools(this.server, this.env, this.state);
+    // Register CoreHR tools with all 3 required arguments
+    registerCoreHrTools(this.server, globalEnv, state);
     
     // Add a simple ping tool for testing connectivity
     this.server.tool(
@@ -68,29 +55,23 @@ export class MyMCP {
           content: [
             { 
               type: 'text', 
-              text: `Pong! ${message} (Environment: ${this.env.ENVIRONMENT}, Company: ${this.env.COMPANY})` 
+              text: `Pong! ${message} (GlobalEnv: ${JSON.stringify(globalEnv)})` 
             }
           ],
         };
       }
     );
     
-    // Add a tool to clear cached tokens if needed
+    // Add a debug tool to check environment variables
     this.server.tool(
-      'clearTokenCache',
+      'checkEnv',
       {},
       async () => {
-        // Reset the token cache
-        this.setState({
-          ...this.state,
-          activeTokens: {}
-        });
-        
         return {
           content: [
             { 
               type: 'text', 
-              text: 'Token cache has been cleared successfully.' 
+              text: `Current environment variables: ${JSON.stringify(globalEnv)}` 
             }
           ],
         };
@@ -99,72 +80,89 @@ export class MyMCP {
     
     console.log("CoreHR MCP Server initialization complete.");
   }
-  
-  /**
-   * Sets the state of the MCP agent
-   */
-  setState(newState: State): void {
-    this.state = newState;
-  }
-  
-  /**
-   * Validates that all required environment variables are present.
-   */
-  private validateEnvironment(): void {
-    // List of all required environment variables
-    const requiredVars = [
-      'COMPANY',
-      'ENVIRONMENT',
-      'KEKA_GRANT_TYPE',
-      'KEKA_SCOPE',
-      'KEKA_CLIENT_ID',
-      'KEKA_CLIENT_SECRET',
-      'KEKA_API_KEY'
-    ];
-    
-    // Check if any variables are missing
-    const missing = requiredVars.filter(key => !this.env[key as keyof Env]);
-    
-    // If any variables are missing, throw an error
-    if (missing.length > 0) {
-      const errorMessage = `Missing required environment variables: ${missing.join(', ')}. Please set these in the Cloudflare Workers dashboard before using this MCP server.`;
-      console.error(errorMessage);
-      throw new Error(errorMessage);
-    }
-  }
 }
 
 // Create and export the worker handler
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const agent = new MyMCP(env, {});
+  fetch(request: Request, env: Env, ctx: ExecutionContext) {
+    console.log("Request received at:", request.url);
+    console.log("Environment variables from wrangler:", {
+      COMPANY: env.COMPANY ? "Set" : "Not set",
+      ENVIRONMENT: env.ENVIRONMENT ? "Set" : "Not set",
+      KEKA_GRANT_TYPE: env.KEKA_GRANT_TYPE ? "Set" : "Not set",
+      KEKA_SCOPE: env.KEKA_SCOPE ? "Set" : "Not set",
+      KEKA_CLIENT_ID: env.KEKA_CLIENT_ID ? "Set" : "Not set",
+      KEKA_CLIENT_SECRET: env.KEKA_CLIENT_SECRET ? "Set" : "Not set",
+      KEKA_API_KEY: env.KEKA_API_KEY ? "Set" : "Not set"
+    });
     
-    // Handle SSE connections for MCP
-    if (request.url.endsWith('/sse')) {
-      // Create SSE response
-      const headers = new Headers({
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive'
-      });
-      
-      const { readable, writable } = new TransformStream();
-      const writer = writable.getWriter();
-      
-      // Handle MCP connections
-      // More implementation needed here...
-      
-      // Return SSE response
-      return new Response(readable, {
-        headers,
+    // Set global variables for this request - directly using the format expected by the tools
+    globalEnv = {
+      COMPANY: env.COMPANY,
+      ENVIRONMENT: env.ENVIRONMENT,
+      KEKA_GRANT_TYPE: env.KEKA_GRANT_TYPE,
+      KEKA_SCOPE: env.KEKA_SCOPE,
+      KEKA_CLIENT_ID: env.KEKA_CLIENT_ID,
+      KEKA_CLIENT_SECRET: env.KEKA_CLIENT_SECRET,
+      KEKA_API_KEY: env.KEKA_API_KEY
+    };
+    
+    // Also set them on the global scope for backward compatibility
+    (globalThis as any).COMPANY = env.COMPANY;
+    (globalThis as any).ENVIRONMENT = env.ENVIRONMENT;
+    (globalThis as any).KEKA_GRANT_TYPE = env.KEKA_GRANT_TYPE;
+    (globalThis as any).KEKA_SCOPE = env.KEKA_SCOPE;
+    (globalThis as any).KEKA_CLIENT_ID = env.KEKA_CLIENT_ID;
+    (globalThis as any).KEKA_CLIENT_SECRET = env.KEKA_CLIENT_SECRET;
+    (globalThis as any).KEKA_API_KEY = env.KEKA_API_KEY;
+    
+    // Set our config in the process.env for libraries that might look there
+    if (typeof process !== 'undefined' && process.env) {
+      process.env.COMPANY = env.COMPANY;
+      process.env.ENVIRONMENT = env.ENVIRONMENT;
+      process.env.KEKA_GRANT_TYPE = env.KEKA_GRANT_TYPE;
+      process.env.KEKA_SCOPE = env.KEKA_SCOPE;
+      process.env.KEKA_CLIENT_ID = env.KEKA_CLIENT_ID;
+      process.env.KEKA_CLIENT_SECRET = env.KEKA_CLIENT_SECRET;
+      process.env.KEKA_API_KEY = env.KEKA_API_KEY;
+    }
+    
+    // ———————————————— delegate to MCP agent ————————————————
+    const url = new URL(request.url);
+    
+    // Handle SSE connections
+    if (url.pathname === "/sse") {
+      return MyMCP.serveSSE("/sse").fetch(request, env, ctx);
+    }
+    
+    // Handle MCP HTTP connections
+    if (url.pathname === "/mcp") {
+      return MyMCP.serve("/mcp").fetch(request, env, ctx);
+    }
+    
+    // Root endpoint for status check
+    if (url.pathname === "/" || url.pathname === "") {
+      return new Response(JSON.stringify({
+        status: "running",
+        name: "CoreHR API MCP Server",
+        environment: env.ENVIRONMENT,
+        company: env.COMPANY,
+        endpoints: ["/sse", "/mcp"],
+        env_check: {
+          COMPANY: env.COMPANY ? "Set" : "Not set",
+          ENVIRONMENT: env.ENVIRONMENT ? "Set" : "Not set",
+          KEKA_GRANT_TYPE: env.KEKA_GRANT_TYPE ? "Set" : "Not set",
+          KEKA_SCOPE: env.KEKA_SCOPE ? "Set" : "Not set",
+          KEKA_CLIENT_ID: env.KEKA_CLIENT_ID ? "Set" : "Not set",
+          KEKA_CLIENT_SECRET: env.KEKA_CLIENT_SECRET ? "Set" : "Not set",
+          KEKA_API_KEY: env.KEKA_API_KEY ? "Set" : "Not set"
+        }
+      }), { 
         status: 200,
+        headers: { "Content-Type": "application/json" }
       });
     }
     
-    // Handle other routes
-    return new Response('MCP Server is running. Connect to /sse for MCP interactions.', {
-      headers: { 'Content-Type': 'text/plain' },
-      status: 200,
-    });
-  }
+    return new Response("Not found. Available endpoints: /, /sse, /mcp", { status: 404 });
+  },
 };
