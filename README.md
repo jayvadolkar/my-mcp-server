@@ -1,5 +1,3 @@
- My MCP Server — Quickstart Guide body 
-
 # 📦 My MCP Server
 
 **My MCP Server** is a no-ops, zero-server-maintenance API host that runs entirely on [Cloudflare Workers](https://workers.cloudflare.com). It wraps the Keka HRIS “getAllEmployees” endpoint (and more) behind a simple _Model Context Protocol_ interface.
@@ -23,7 +21,7 @@ This project lets you host a fully-functional HRIS API server on Cloudflare in m
 
 *   Real-time **SSE** endpoint (`/sse`)
 *   Standard HTTP/MCP endpoint (`/mcp`)
-*   Tools like `getAllEmployees`, `ping`, and `checkEnv`
+*   Tools like `getAllEmployees`, `ping` (others will come in future)
 
 ## 2\. Prerequisites
 

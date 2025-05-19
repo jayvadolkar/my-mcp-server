@@ -4,10 +4,7 @@
 ```gitignore
 # .gitignore (place this at the root of your project)
 
-# Node modules
-/node_modules/
-/.Wrangler/
-/.vscode/
+
 
 # TypeScript build output
 /dist/
@@ -38,3 +35,6 @@ coverage/
 *.tar.gz
 *.tar
 *.gz        
+/.vscode
+/.wrangler
+/node_modules
