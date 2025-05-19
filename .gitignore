@@ -37,4 +37,3 @@ coverage/
 *.gz        
 /.vscode
 /.wrangler
-/node_modules

@@ -57,7 +57,7 @@ export default {
 
     if (url.pathname === "/sse") {
       // Static serveSSE handles instantiation internally
-      return MyMCP.serveSSE("/sse").fetch(request, env, ctx);
+      return MyMCP.serve("/sse").fetch(request, env, ctx);
     }
 
     if (url.pathname === "/mcp") {
