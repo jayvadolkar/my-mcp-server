@@ -30,13 +30,14 @@
 		"enabled": true
 	},
 	"vars": {
-    	"COMPANY": "-give-your-company-name-",
-    	"ENVIRONMENT": "give-your-environment",
-    	"KEKA_API_KEY": "your-keka-api-key",
-    	"KEKA_CLIENT_ID": "your-keka-client-id",
-    	"KEKA_CLIENT_SECRET": "your-keka-client-secret",
-    	"KEKA_GRANT_TYPE": "kekaapi",
-    	"KEKA_SCOPE": "kekaapi"
+		// This is where you can define your environment variables
+    	"COMPANY": "",
+    	"ENVIRONMENT": "",
+    	"KEKA_API_KEY": "",
+    	"KEKA_CLIENT_ID": "",
+    	"KEKA_CLIENT_SECRET": "",
+    	"KEKA_GRANT_TYPE": "",
+    	"KEKA_SCOPE": ""
   }
 	/**
 	 * Smart Placement

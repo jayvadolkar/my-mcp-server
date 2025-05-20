@@ -31,6 +31,7 @@ export class MyMCP extends McpAgent<Env> {
 
     // Two-arg signature
     registerCoreHrTools(this.server, this.env);
+    
 
     // Example ping tool
     this.server.tool(

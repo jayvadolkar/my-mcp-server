@@ -2,49 +2,20 @@ import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
 
+
+
 // Define schema for function parameters
-export const filtersSchema = z
-  .object({
-    employeeIds: z
-      .string()
-      .optional()
-      .describe("Comma separated list of one or more Employee ids"),
-    employeeNumbers: z
-      .string()
-      .optional()
-      .describe("Comma separated list of Employee numbers"),
-    employmentStatus: z
-      .string()
-      .optional()
-      .describe("Statuses (Working, Relieved)"),
-    inProbation: z
-      .boolean()
-      .optional()
-      .default(false)
-      .describe("Fetches employees in probation"),
-    inNoticePeriod: z
-      .boolean()
-      .optional()
-      .default(false)
-      .describe("Fetches employees in notice period"),
-    lastModified: z
-      .string()
-      .optional()
-      .describe("Last modified (YYYY-MM-DDThh:mm:ss±hh:mm)"),
-    searchKey: z
-      .string()
-      .optional()
-      .describe("Search key (min 3 chars)"),
-    pageNumber: z
-      .number()
-      .optional()
-      .default(1)
-      .describe("int 32, Page number"),
-    pageSize: z
-      .number()
-      .optional()
-      .default(100)
-      .describe(" int32, Results per page (max 200)"),
+export const filtersSchema = 
+  z.object({
+    employeeIds: z.string().optional().describe("Comma separated list of one or more Employee UUIDs"),
+    employeeNumbers: z.string().optional().describe("Comma separated list of Employee numbers"),
+    employmentStatus: z.string().optional().describe("Statuses of employement of an employee (Working, Relieved)"),
+    inProbation: z.boolean().optional().default(false).describe("Fetches employees in probation. False - employees not in probation, true - employees in probation"),
+    inNoticePeriod: z.boolean().optional().default(false).describe("Fetches employees in notice period. False - employees not in notice period, true - employees in notice period"),
+    lastModified: z.string().optional().describe("Date/time when this time off request was last modified, in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm)."),
+    searchKey: z.string().optional().describe("The search key allowed value must have atleast 3 characters. It can be employee first name, last name, Given name"),
+    pageNumber: z.number().optional().default(1).describe("int 32, Page number"),
+    pageSize: z.number().optional().default(100).describe(" int32, Results per page (max 200)"),
   })
   .optional()
   .default({});
