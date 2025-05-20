@@ -7,9 +7,9 @@ import { Env } from "../../index";
 export const getGroupsQuery = z
   .object({
     groupTypeIds:     z.string().optional().describe("Comma-separated list of Group Type IDs (UUIDs). Group Type IDs can be obtained from the getgrouptypes API."),
-    lastModified:     z.string().optional().describe("ISO 8601 timestamp to filter by last modified"),
-    pageNumber:       z.number().int().optional().default(1).describe("Page number (default 1)"),
-    pageSize:         z.number().int().optional().default(100).describe("Results per page (max 200, default 100)"),
+    lastModified:     z.string().optional().describe("ISO 8601 timestamp to filter by last modified. if time is not provided, consider time as 00:00:00"),
+    pageNumber:       z.coerce.number().int().optional().default(1).describe("Page number (default 1)"),
+    pageSize:         z.coerce.number().int().optional().default(100).describe("Results per page (max 200, default 100)"),
   })
   .describe("Groups query parameters. and in response SystemGroupTypes are 0 = None, 1 = BusinessUnit, 2 = Department, 3 = OrgLocation, 4 = CostCenter, 5 = Paygroup, 6 = ProjectTeam, 7 = Team, 8 = ClientTeam, 9 = LegalEntity");
 

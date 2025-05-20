@@ -1,5 +1,3 @@
-import { z } from "zod";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { getAllEmployees, filtersSchema,} from "./getAllEmployees";
 import { createEmployee, createEmployeeSchema } from "./createAnEmployee";
 import { getEmployee, getEmployeeParams } from "./getAnEmployee";
@@ -11,6 +9,14 @@ import { getGroupTypes, getGroupTypesQuery } from "./getAllGroupTypes";
 import { getDepartments, getDepartmentsQuery } from "./getAllDepartments";
 import { getLocations, getLocationsQuery } from "./getAllLocations";
 import { getJobTitles, getJobTitlesQuery } from "./getAllJobTitles";
+import { getNoticePeriods, getNoticePeriodsQuery } from "./getAllNoticePeriods";
+import { getCurrencies, getCurrenciesQuery } from "./getAllCurrencies";
+import { getContingentTypes, getContingentTypesQuery } from "./getAllContingentTypes";
+import { updateDeactivateEmployee, updateDeactivateEmployeeSchema, updateDeactivateEmployeetParams } from "./updateDeactivateEmployee";
+import { deactivateEmployee, deactivateEmployeeParams, deactivateEmployeeSchema } from "./deactivateEmployee";
+import { getExitReasons, getExitReasonsQuery } from "./getAllExitReasons";
+
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { Env } from "../../index";
 
 
@@ -213,7 +219,7 @@ export function registerCoreHrTools(server: McpServer, env: Env) {
   );
   // ── GET /hris/departments ────────────────────────────────────────────────
   server.tool(
-    "getDepartments",
+    "getAllDepartments",
     "This tool can be used to fetch a list of all the departments in Keka. The department IDs are UUIDs.",
     { query: getDepartmentsQuery },
     async ({ query }) => {  
@@ -236,7 +242,7 @@ export function registerCoreHrTools(server: McpServer, env: Env) {
   );
   // ── GET /hris/locations ─────────────────────────────────────────────────
   server.tool(
-    "getLocations",
+    "getAllLocations",
     "This tool can be used to fetch a list of all the locations in Keka. The location IDs are UUIDs.",
     { query: getLocationsQuery },
     async ({ query }) => {
@@ -259,7 +265,7 @@ export function registerCoreHrTools(server: McpServer, env: Env) {
   );
   // ── GET /hris/jobtitles ─────────────────────────────────────────────────
   server.tool(
-    "getJobTitles",
+    "getAllJobTitles",
     "This tool can be used to fetch a list of all the job titles in Keka. The job title IDs are UUIDs.",
     { query: getJobTitlesQuery },
     async ({ query }) => {
@@ -280,6 +286,151 @@ export function registerCoreHrTools(server: McpServer, env: Env) {
       }
     }
   );
+  // ── GET /hris/noticeperiods ──────────────────────────────────────────────
+  server.tool(
+    "getAllNoticePeriods",
+    "This tool can be used to fetch a list of all the notice periods in Keka. The notice period IDs are UUIDs.",
+    { query: getNoticePeriodsQuery },
+    async ({ query }) => {
+      try {
+        const noticePeriods = await getNoticePeriods(env, query);
+        return {
+          content: [
+            { type: "text", text: JSON.stringify(noticePeriods, null, 2) }
+          ]
+        };
+      } catch (e: any) {
+        return {
+          content: [
+            { type: "text", text: `Error fetching notice periods: ${e.message}` }
+          ],
+          isError: true
+        };
+      }
+    }
+  );
+  // ── GET /hris/currencies ────────────────────────────────────────────────
+  server.tool(
+    "getAllCurrencies",
+    "This tool can be used to fetch a list of all the currencies in Keka. The currency IDs are UUIDs.",
+    { query: getCurrenciesQuery },
+    async ({ query }) => {
+      try {
+        const currencies = await getCurrencies(env, query);
+        return {
+          content: [
+            { type: "text", text: JSON.stringify(currencies, null, 2) }
+          ]
+        };
+      } catch (e: any) {
+        return {
+          content: [
+            { type: "text", text: `Error fetching currencies: ${e.message}` }
+          ],
+          isError: true
+        };
+      }
+    }
+  );
+  // ── GET /hris/contingenttypes ────────────────────────────────────────────
+  server.tool(
+    "getAllContingentTypes",
+    "This tool can be used to fetch a list of all the contingent types in Keka. The contingent type IDs are UUIDs.",
+    { query: getContingentTypesQuery },
+    async ({ query }) => {
+      try {
+        const contingentTypes = await getContingentTypes(env, query);
+        return {
+          content: [
+            { type: "text", text: JSON.stringify(contingentTypes, null, 2) }
+          ]
+        };
+      } catch (e: any) {
+        return {
+          content: [
+            { type: "text", text: `Error fetching contingent types: ${e.message}` }
+          ],
+          isError: true
+        };
+      }
+    }
+  );
+  // ── PUT /hris/employees/{id}/exitrequest ─────────────────────────────────
+  server.tool(
+    "deactivateAnEmployee",
+    "This tool can be used to update or deactivate an employee in Keka. The exit type can be 0 (None), 1 (Employee Resignation), or 2 (Company Action).",
+    {
+      id:   updateDeactivateEmployeetParams.shape.id,
+      data: updateDeactivateEmployeeSchema
+    },
+    async ({ id, data }) => {
+      try {
+        const result = await updateDeactivateEmployee(env, id, data);
+        return {
+          content: [
+            { type: "text", text: JSON.stringify(result, null, 2) }
+          ]
+        };
+      } catch (e: any) {
+        return {
+          content: [
+            { type: "text", text: `Error deactivating employee: ${e.message}` }
+          ],
+          isError: true
+        };
+      }
+    }
+  );
+  // ── POST /hris/employees/{id}/deactivateemployee ─────────────────────────────────
+  server.tool(
+    "deactivateEmployee",
+    "This tool can be used to request an exit for an employee in Keka. The exit type can be 0 (None), 1 (Employee Resignation), or 2 (Company Action).",
+    {
+      id:   deactivateEmployeeParams.shape.id,
+      data: deactivateEmployeeSchema
+    },
+    async ({ id, data }) => {
+      try {
+        const result = await deactivateEmployee(env, id, data);
+        return {
+          content: [
+            { type: "text", text: JSON.stringify(result, null, 2) }
+          ]
+        };
+      } catch (e: any) {
+        return {
+          content: [
+            { type: "text", text: `Error requesting exit: ${e.message}` }
+          ],
+          isError: true
+        };
+      }
+    }
+  );
+  // ── GET /hris/exitreasons ────────────────────────────────────────────────
+  server.tool(
+    "getAllExitReasons",
+    "This tool can be used to fetch a list of all the exit reasons in Keka. The exit reason IDs are UUIDs.",
+    { query: getExitReasonsQuery },
+    async ({ query }) => {
+      try {
+        const exitReasons = await getExitReasons(env, query);
+        return {
+          content: [
+            { type: "text", text: JSON.stringify(exitReasons, null, 2) }
+          ]
+        };
+      } catch (e: any) {
+        return {
+          content: [
+            { type: "text", text: `Error fetching exit reasons: ${e.message}` }
+          ],
+          isError: true
+        };
+      }
+    }
+  );
+  
 
 }
 

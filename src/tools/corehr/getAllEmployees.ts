@@ -14,8 +14,8 @@ export const filtersSchema =
     inNoticePeriod: z.boolean().optional().default(false).describe("Fetches employees in notice period. False - employees not in notice period, true - employees in notice period"),
     lastModified: z.string().optional().describe("Date/time when this time off request was last modified, in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm)."),
     searchKey: z.string().optional().describe("The search key allowed value must have atleast 3 characters. It can be employee first name, last name, Given name"),
-    pageNumber: z.number().optional().default(1).describe("int 32, Page number"),
-    pageSize: z.number().optional().default(100).describe(" int32, Results per page (max 200)"),
+    pageNumber: z.coerce.number().optional().default(1).describe("int 32, Page number"),
+    pageSize: z.coerce.number().optional().default(100).describe(" int32, Results per page (max 200)"),
   })
   .optional()
   .default({});

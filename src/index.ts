@@ -5,7 +5,10 @@
 
 import { McpAgent } from "agents/mcp";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { registerCoreHrTools } from "./tools/corehr";
+import { registerCoreHrTools } from "./tools/corehr/corehr_index";
+import { registerDocumentTools } from "./tools/document/document_index";
+import { registerLeaveTools } from "./tools/leave/leave_index";
+import { registerCommonTools } from "./tools/common/schemaRegistry_index";
 import { z } from "zod";
 
 export interface Env {
@@ -30,7 +33,11 @@ export class MyMCP extends McpAgent<Env> {
     console.log("Initializing CoreHR MCP Server with env:", this.env);
 
     // Two-arg signature
+    registerCommonTools(this.server)
     registerCoreHrTools(this.server, this.env);
+    registerDocumentTools(this.server, this.env);
+    registerLeaveTools(this.server, this.env);
+    
     
 
     // Example ping tool

@@ -7,8 +7,8 @@ import { Env } from "../../index";
 export const getLocationsQuery = z
   .object({
     lastModified: z.string().optional().describe("ISO 8601 timestamp to filter by last modified"),
-    pageNumber:   z.number().int().optional().default(1).describe("Page number (default 1)"),
-    pageSize: z.number()
+    pageNumber:   z.coerce.number().int().optional().default(1).describe("Page number (default 1)"),
+    pageSize: z.coerce.number()
       .int()
       .optional()
       .default(100).describe("Results per page (max 200, default 100)"),

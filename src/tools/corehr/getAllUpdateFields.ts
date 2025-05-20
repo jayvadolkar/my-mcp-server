@@ -6,8 +6,8 @@ import { Env } from "../../index";
 /** 1️⃣ Query‐params schema */
 export const updateFieldsQuery = 
 z.object({
-    pageNumber: z.number().int().optional().default(1).describe("Page number (default 1)"),
-    pageSize:   z.number().int().optional().default(100).describe("Results per page (max 200, default 100)"),
+    pageNumber: z.coerce.number().int().optional().default(1).describe("Page number (default 1)"),
+    pageSize:   z.coerce.number().int().optional().default(100).describe("Results per page (max 200, default 100)"),
   })
   .describe("This tool can be used to fetch a list of all the fields that can be updated for an employee. The field types are 1 - Integer, 2 - Decimal, 3 - String, 4 - Boolean, 5 - Enum, 6 - DateTime, 7 - MultiDropdown, 8 - Checkbox, 9 - Dropdown, 10 - TextBox, 11 - TextArea, 12 - Date, 13 - Number");
 

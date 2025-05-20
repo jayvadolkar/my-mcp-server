@@ -1,13 +1,17 @@
-// src/tools/corehr/getJobTitles.ts
+// src/tools/corehr/getContingentTypes.ts
 import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
 
-/** 1️⃣ Query‐params schema */
-export const getJobTitlesQuery = z
+/** 1️⃣ Query-params schema */
+export const getContingentTypesQuery = z
   .object({
-    lastModified: z.string().optional().describe("ISO 8601 timestamp to filter by last modified"),
-    pageNumber: z.coerce.number().int().optional().default(1).describe("Page number (default 1). More pages can be fetched using the pageSize and nextPage parameter."),
+    pageNumber: z.coerce
+.number()
+      .int()
+      .optional()
+      .default(1)
+      .describe("Page number (default 1)"),
     pageSize: z.coerce
       .number()
       .int()
@@ -15,23 +19,22 @@ export const getJobTitlesQuery = z
       .default(100)
       .describe("Results per page (max 200, default 100)"),
   })
-  .describe("Job titles query parameters");
+  .describe("Contingent types pagination parameters");
 
 /**
- * 2️⃣ Call the Keka API to fetch job titles
+ * 2️⃣ Call the Keka API to fetch contingent types
  */
-export async function getJobTitles(
+export async function getContingentTypes(
   env: Env,
-  query: z.infer<typeof getJobTitlesQuery>
+  query: z.infer<typeof getContingentTypesQuery>
 ) {
   const token = await getAuthToken(env);
   const baseUrl = `https://${env.COMPANY}.${env.ENVIRONMENT}.com/api/v1`;
-  const url = new URL(`${baseUrl}/hris/jobtitles`);
+  const url = new URL(`${baseUrl}/hris/contingenttypes`);
 
+  // Append pagination params
   Object.entries(query).forEach(([key, value]) => {
-    if (value !== undefined) {
-      url.searchParams.append(key, String(value));
-    }
+    if (value !== undefined) url.searchParams.append(key, String(value));
   });
 
   const res = await fetch(url.toString(), {

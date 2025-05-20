@@ -24,7 +24,7 @@ export const updateJobDetailsSchema = z.object({
   reportingManager:            z.string().optional().describe("Reporting manager ID. If the name of the manager is passed, fetch employee ID using getallemployees API (passing name in searchKey) and pass the Employee ID (UUID) here"),
   dottedLineManager:           z.string().optional().describe("Dotted-line manager ID. If the name of the dotted line manager is passed, fetch employee ID using getallemployees API (passing name in searchKey) and pass the Employee ID (UUID) here"),
   attendanceNumber:            z.string().optional().describe("Attendance number. This is the number assigned to the employee for attendance purposes. This is a unique number for each employee"),
-  timeType:                    z.number().int().optional().describe("TimeType: 0=None,1=FullTime,2=PartTime"),
+  timeType:                    z.coerce.number().int().optional().describe("TimeType: 0=None,1=FullTime,2=PartTime"),
   attendanceCaptureScheme:     z.string().optional().describe("Attendance capture scheme ID. This id can be fetched from the getallcaptureschemes API"),
   expensePolicy:               z.string().optional().describe("Expense policy ID. This id can be fetched from the getallexpensepolicies API"),
   noticePeriod:                z.string().optional().describe("Notice period ID. This id can be fetched from the getallnoticeperiods API"),
@@ -37,7 +37,7 @@ export const updateJobDetailsSchema = z.object({
   weeklyOffPolicy:             z.string().optional().describe("Weekly off policy ID"),
   attendancePenalisationPolicy:z.string().optional().describe("Attendance penalisation policy ID"),
   customFields:                z.array(customFieldSchema).optional().describe("Custom fields. This is a map of custom field IDs to their values. The ID must be a valid custom field ID, and the value must be a string. IDs can be obtained from getallupdatefields API"),
-  workerType:                  z.number().int().optional().describe("WorkerType: 0=None,1=Permanent,2=Contingent"),
+  workerType:                  z.coerce.number().int().optional().describe("WorkerType: 0=None,1=Permanent,2=Contingent"),
   contingentTypeId:            z.string().optional().describe("Contingent type ID (UUID)")
 });
 

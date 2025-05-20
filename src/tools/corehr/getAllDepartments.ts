@@ -8,8 +8,8 @@ export const getDepartmentsQuery = z
   .object({
     departmentIds: z.string().optional().describe("Comma-separated list of Department IDs (UUIDs). The UUID for the department can be found  as part of many API responses. For example, when you fetch all employees, the department ID is included in the employee object."),
     lastModified: z.string().optional().describe("ISO 8601 timestamp to filter by last modified. Only departments modified after this timestamp will be returned. if only date is provided, the time will be set to 00:00:00.000Z. If only time is provided, the date will be set to today."),
-    pageNumber: z.number().int().optional().default(1).describe("Page number (default 1)"),
-    pageSize: z.number().int().optional().default(100).describe("Results per page (max 200, default 100)")
+    pageNumber: z.coerce.number().int().optional().default(1).describe("Page number (default 1)"),
+    pageSize: z.coerce.number().int().optional().default(100).describe("Results per page (max 200, default 100)")
   })
   .describe("Departments query parameters");
 

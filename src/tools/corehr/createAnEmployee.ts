@@ -12,7 +12,7 @@ export const createEmployeeSchema = z.object({
   lastName:         z.string().describe("Surname or last name of the employee"),
   email:            z.string().email().describe("Work email address of the employee. Should be unique and in email format"),
   mobileNumber:     z.string().describe("Mobile phone number"),
-  gender:           z.number().int().describe("0 - NotSpecified, 1 - Male, 2 - Female, 3 - Nonbinary, 4 - PreferNotToRespond"),
+  gender:           z.coerce.number().int().describe("0 - NotSpecified, 1 - Male, 2 - Female, 3 - Nonbinary, 4 - PreferNotToRespond"),
   dateOfBirth:      z.string().describe("ISO 8601 date/time of birth. If only date is provided, it will be auto-generated as YYYY-MM-DD and time will be set to 00:00:00"),
   dateJoined:       z.string().describe("ISO  datetime of joining date. If only date is provided, it will be auto-generated as YYYY-MM-DD and time will be set to 00:00:00"),
   department:       z.string().describe("Department UUID or identifier. If name provided, we have to call the get all groups API to get the UUID"),

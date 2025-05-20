@@ -1,33 +1,38 @@
-// src/tools/corehr/getJobTitles.ts
+// src/tools/corehr/getExitReasons.ts
 import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
 
 /** 1️⃣ Query‐params schema */
-export const getJobTitlesQuery = z
+export const getExitReasonsQuery = z
   .object({
-    lastModified: z.string().optional().describe("ISO 8601 timestamp to filter by last modified"),
-    pageNumber: z.coerce.number().int().optional().default(1).describe("Page number (default 1). More pages can be fetched using the pageSize and nextPage parameter."),
-    pageSize: z.coerce
+    pageNumber: z
+      .number()
+      .int()
+      .optional()
+      .default(1)
+      .describe("Page number (default 1)"),
+    pageSize: z
       .number()
       .int()
       .optional()
       .default(100)
       .describe("Results per page (max 200, default 100)"),
   })
-  .describe("Job titles query parameters");
+  .describe("Exit reasons pagination parameters");
 
 /**
- * 2️⃣ Call the Keka API to fetch job titles
+ * 2️⃣ Call the Keka API to fetch exit reasons
  */
-export async function getJobTitles(
+export async function getExitReasons(
   env: Env,
-  query: z.infer<typeof getJobTitlesQuery>
+  query: z.infer<typeof getExitReasonsQuery>
 ) {
   const token = await getAuthToken(env);
   const baseUrl = `https://${env.COMPANY}.${env.ENVIRONMENT}.com/api/v1`;
-  const url = new URL(`${baseUrl}/hris/jobtitles`);
+  const url = new URL(`${baseUrl}/hris/exitreasons`);
 
+  // Append pagination params
   Object.entries(query).forEach(([key, value]) => {
     if (value !== undefined) {
       url.searchParams.append(key, String(value));
