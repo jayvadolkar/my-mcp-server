@@ -1,0 +1,70 @@
+// src/tools/psa/getProjectPhases.ts
+import { z } from "zod";
+import { getAuthToken } from "../../auth";
+import { Env } from "../../index";
+
+/** 1️⃣ Path‐params schema */
+export const getProjectPhasesPath = z
+  .object({
+    projectId: z.string().uuid().describe("UUID of the PSA project"),
+  })
+  .describe("Path parameters for fetching project phases");
+
+/** 2️⃣ Query‐params schema */
+export const getProjectPhasesQuery = z
+  .object({
+    lastModified: z
+      .string()
+      .datetime()
+      .optional()
+      .describe("Include phases modified since this ISO 8601 datetime"),
+    pageNumber: z
+      .coerce.number()
+      .int()
+      .optional()
+      .default(1)
+      .describe("Page number (default 1)"),
+    pageSize: z
+      .coerce.number()
+      .int()
+      .optional()
+      .default(100)
+      .describe("Results per page (default 100)"),
+  })
+  .describe("Query parameters for fetching project phases");
+
+/**
+ * 3️⃣ Call the Keka API to fetch phases under a project
+ */
+export async function getProjectPhases(
+  env: Env,
+  path: z.infer<typeof getProjectPhasesPath>,
+  query: z.infer<typeof getProjectPhasesQuery>
+) {
+  const token = await getAuthToken(env);
+  const { projectId } = path;
+  const url = new URL(
+    `https://${env.COMPANY}.${env.ENVIRONMENT}.com/api/v1/psa/projects/${projectId}/phases`
+  );
+
+  Object.entries(query).forEach(([key, value]) => {
+    if (value !== undefined && value !== "") {
+      url.searchParams.append(key, String(value));
+    }
+  });
+
+  const res = await fetch(url.toString(), {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept:        "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(
+      `GET ${url.toString()} failed: ${res.status} ${res.statusText}`
+    );
+  }
+  return res.json();
+}

@@ -9,6 +9,9 @@ import { registerCoreHrTools } from "./tools/corehr/corehr_index";
 import { registerDocumentTools } from "./tools/document/document_index";
 import { registerLeaveTools } from "./tools/leave/leave_index";
 import { registerCommonTools } from "./tools/common/schemaRegistry_index";
+import { registerAttendanceTools } from "./tools/attendance/attendance_index";
+import { registerPayrollTools } from "./tools/payroll/payroll_index";
+import { registerPsaTools } from "./tools/psa/psa_index";
 import { z } from "zod";
 
 export interface Env {
@@ -30,17 +33,9 @@ export class MyMCP extends McpAgent<Env> {
 
   // Override the zero-arg init() from McpAgent
   override async init(): Promise<void> {
-    console.log("Initializing CoreHR MCP Server with env:", this.env);
+    console.log("Initializing kekaHR MCP Server with env:", this.env);
 
-    // Two-arg signature
-    registerCommonTools(this.server)
-    registerCoreHrTools(this.server, this.env);
-    registerDocumentTools(this.server, this.env);
-    registerLeaveTools(this.server, this.env);
-    
-    
-
-    // Example ping tool
+     // Example ping tool
     this.server.tool(
       "ping",
       { message: z.string().optional() },
@@ -53,6 +48,19 @@ export class MyMCP extends McpAgent<Env> {
         ],
       })
     );
+
+    // Two-arg signature
+    registerCommonTools(this.server)
+    registerCoreHrTools(this.server, this.env);
+    registerDocumentTools(this.server, this.env);
+    registerLeaveTools(this.server, this.env);
+    registerAttendanceTools(this.server, this.env);
+    registerPayrollTools(this.server, this.env);
+    registerPsaTools(this.server, this.env)
+    
+    
+
+   
 
     console.log("CoreHR MCP Server initialization complete.");
   }

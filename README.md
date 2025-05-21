@@ -1,139 +1,77 @@
-# 📦 My MCP Server
+# Cloudflare Workers MCP Server
 
-**My MCP Server** is a no-ops, zero-server-maintenance API host that runs entirely on [Cloudflare Workers](https://workers.cloudflare.com). It wraps the Keka HRIS “getAllEmployees” endpoint (and more) behind a simple _Model Context Protocol_ interface.
+A **Model Context Protocol** (MCP) server built on _Cloudflare Workers_ in TypeScript, exposing HR, Payroll, and PSA tools via Zod‐validated endpoints. Created with **Claude filesystem MCP** and a dash of _“vibe coding”_.
 
-[🚀 One-Click Deploy to Cloudflare Workers](https://dash.cloudflare.com/?to=/:account/workers/deploy?template=github.com/jayvadolkar/my-mcp-server)
+## 📦 Features
 
-## Table of Contents
+*   **Core HR**: Employee, document, leave & attachment tools
+*   **Payroll**: Salaries, pay‐cycles, pay‐groups, payments, F&F settlements
+*   **PSA**: Clients, projects, phases, tasks, allocations, time‐entries
+*   **Schema Registry**: Runtime lookup for all request/response Zod schemas
+*   Fully typed in `zod` with `.describe()` for automatic docs
+*   Deployed via `wrangler publish`, dev locally with `wrangler dev`
 
-1.  [Overview](#overview)
-2.  [Prerequisites](#prerequisites)
-3.  [Setup & Installation](#setup)
-4.  [Running Locally](#local)
-5.  [Deploy to Production](#deploy)
-6.  [Usage & Endpoints](#usage)
-7.  [.gitignore](#gitignore)
-8.  [Support](#support)
+## 🚀 Quick Start
 
-## 1\. Overview
-
-This project lets you host a fully-functional HRIS API server on Cloudflare in minutes—no servers to provision. It provides:
-
-*   Real-time **SSE** endpoint (`/sse`)
-*   Standard HTTP/MCP endpoint (`/mcp`)
-*   Tools like `getAllEmployees`, `ping` (others will come in future)
-
-## 2\. Prerequisites
-
-*   **Cloudflare account:** Sign up at [dash.cloudflare.com](https://dash.cloudflare.com/sign-up)
-*   **Wrangler CLI:** Install with `npm install -g wrangler`
-*   **Node.js & npm:** Version 18 or above ([nodejs.org](https://nodejs.org))
-*   **Git:** For cloning the repo ([git-scm.com](https://git-scm.com))
-
-## 3\. Setup & Installation
-
-### 3.1 Clone the Repository
+### 1\. Clone & Install
 
 ```
-git clone https://github.com/jayvadolkar/my-mcp-server.git
-cd my-mcp-server
-```
-
-### 3.2 Install Dependencies
-
-```
+git clone https://github.com/your-org/worker-mcp-server.git
+cd worker-mcp-server
 npm install
 ```
 
-### 3.3 Configure Environment Variables
+### 2\. Configure Environment Variables
 
-Create a file named `.dev.vars` in the project root. This file keeps your secrets safe and is _not_ checked into Git.
-
-```dotenv
-.COMPANY="your-company"  
-.ENVIRONMENT="your-env"  
-.KEKA_GRANT_TYPE="kekaapi"  
-.KEKA_SCOPE="kekaapi"  
-.KEKA_CLIENT_ID="PASTE_CLIENT_ID_HERE"  
-.KEKA_CLIENT_SECRET="PASTE_CLIENT_SECRET_HERE"  
-.KEKA_API_KEY="PASTE_API_KEY_HERE"
-```
-
-Wrangler will automatically load these when you run `wrangler dev`.
-
-### 3.4 Build the Project
+In the root, create `.dev.vars` or set in Cloudflare dashboard:
 
 ```
-npm run build
+
+COMPANY=your-company
+ENVIRONMENT=dev
+KDK_CLIENT_ID=...
+KDK_CLIENT_SECRET=...
+# any other Keka API secrets
 ```
 
-## 4\. Running Locally
-
-Start a local preview of your Worker:
+### 3\. Run Locally
 
 ```
-npm start
+wrangler dev --local .dev.vars
 ```
 
-Open your browser at [http://127.0.0.1:8787](http://127.0.0.1:8787) You should see a JSON health check. To try the tools:
-
-*   **ping:**  
-    `curl -X POST http://127.0.0.1:8787/mcp \ -d '{"tool":"ping","args":{"message":"hello"}}'`
-*   **checkEnv:**  
-    `curl -X POST http://127.0.0.1:8787/mcp \ -d '{"tool":"checkEnv","args":{}}'`
-
-## 5\. Deploy to Production
-
-**Option A: One-Click Deploy**  
-Click the button at the top of this README to deploy instantly. You’ll be prompted to select your Cloudflare account and to confirm your new Worker.
-
-**Option B: Wrangler CLI**  
-If you prefer the terminal:
+### 4\. Deploy to Cloudflare
 
 ```
-npx wrangler login
-npm run build
-npx wrangler publish
+wrangler publish
 ```
 
-After publishing, your Worker will live at `https://<your-subdomain>.workers.dev`.
+## 🔧 Configuration
 
-## 6\. Usage & Endpoints
+*   **src/index.ts** reads `env.COMPANY` & `env.ENVIRONMENT`
+*   Register additional tools in `src/tools/*/index.ts`
+*   Add new Zod schemas in `src/tools/*responseschemas.ts` and register in `schemaRegistry.ts`
 
-### 6.1 Health Check (`GET /`)
+## 📜 Changelog
 
-Returns JSON like:
+*   **v1.0.0** – Initial MVP: Core HR, Leave, Documents
+*   **v1.1.0** – Added Payroll endpoints & schemas
+*   **v1.2.0** – Integrated PSA: Clients, Projects, Tasks, Billing
+*   **v1.3.0** – Schema registry overhaul; unified pagination wrapper
 
-```json
-{  
-  "status":"running",
-  "name":"CoreHR API MCP Server",
-  "company":"your-company",
-  "environment":"your-env",
-  "endpoints":["/sse","/mcp"]  
-}
-```
+## 🔮 Future Scope
 
-### 6.2 SSE Endpoint (`/sse`)
+*   🛠️ _Real‐time_ webhooks for time‐entry & payroll events
+*   📊 Admin UI for live tool invocation & schema browsing
+*   🔐 Role‐based access control with JWT & API key support
+*   🔗 Integration with other microservices via Pub/Sub / KV store
 
-Use a browser or SSE client to connect and receive live streams of tool results.
+## 📚 Resources
 
-### 6.3 MCP HTTP (`POST /mcp`)
+*   [Cloudflare Workers Docs](https://developers.cloudflare.com/workers/)
+*   [MCP SDK for Server](https://github.com/model-context-protocol/sdk)
+*   [Zod Schema Validation](https://github.com/colinhacks/zod)
 
-Example with `getAllEmployees`:
+- - -
 
-```json
-{  
-  "tool":"getAllEmployees",  
-  "args":{  
-    "filters":{ "searchKey":"john" }  
-  }  
-}
-```
-
-
-## 8\. Support & Feedback
-
-Found an issue or need help? Open a GitHub Issue: [https://github.com/jayvadolkar/my-mcp-server/issues](https://github.com/jayvadolkar/my-mcp-server/issues)
-
-Happy deploying! 🚀
+Made with ❤️ in TypeScript, powered by “vibe coding”.

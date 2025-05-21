@@ -6,7 +6,7 @@ import { schemaRegistryParams, getSchema } from "./schemaRegistry";
 export function registerCommonTools(server: McpServer) {
   server.tool(
     "getSchema",
-    "This tool to be called when there are some doubts about schema of any other tool",
+    "This tool to be called when there are some doubts about schema of any other tool. Descriptions are for your understanding. While explaining. go as simple yet explanatory as possible",
     { key: schemaRegistryParams.shape.key },
     async ({ key }, extra) => {
       try {
