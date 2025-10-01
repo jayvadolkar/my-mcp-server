@@ -1,0 +1,43 @@
+// src/tools/expense/getEmployeeExpenses.ts
+import { z } from "zod";
+import { getAuthToken } from "../../auth";
+import { Env } from "../../index";
+import { handleApiError } from "../common/errorHandler";
+
+export const getEmployeeExpensesParams = z.object({
+  employeeId: z.string().uuid().describe("Employee UUID")
+});
+
+export const getEmployeeExpensesQuery = z.object({
+  pageNumber: z.coerce.number().int().optional().describe("Page number"),
+  pageSize: z.coerce.number().int().optional().describe("Results per page (max 200)")
+});
+
+export async function getEmployeeExpenses(
+  env: Env,
+  employeeId: string,
+  query: z.infer<typeof getEmployeeExpensesQuery>
+) {
+  const token = await getAuthToken(env);
+  const baseUrl = `https://${env.COMPANY}.${env.ENVIRONMENT}.com/api/v1`;
+  const url = new URL(`${baseUrl}/expense/employees/${encodeURIComponent(employeeId)}/expenses`);
+
+  Object.entries(query).forEach(([key, value]) => {
+    if (value !== undefined) {
+      url.searchParams.append(key, String(value));
+    }
+  });
+
+  const res = await fetch(url.toString(), {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json"
+    }
+  });
+
+  if (!res.ok) {
+    await handleApiError(res, "GET", url.toString());
+  }
+  return res.json();
+}

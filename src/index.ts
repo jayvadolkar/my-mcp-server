@@ -12,6 +12,10 @@ import { registerCommonTools } from "./tools/common/schemaRegistry_index";
 import { registerAttendanceTools } from "./tools/attendance/attendance_index";
 import { registerPayrollTools } from "./tools/payroll/payroll_index";
 import { registerPsaTools } from "./tools/psa/psa_index";
+import { registerExpenseTools } from "./tools/expense/expense_index";
+import { registerPmsTools } from "./tools/pms/pms_index";
+import { registerSkillsTools } from "./tools/skills/skills_index";
+
 import { z } from "zod";
 
 export interface Env {
@@ -57,12 +61,12 @@ export class MyMCP extends McpAgent<Env> {
     registerAttendanceTools(this.server, this.env);
     registerPayrollTools(this.server, this.env);
     registerPsaTools(this.server, this.env)
+    registerExpenseTools(this.server, this.env);
+    registerPmsTools(this.server, this.env);
+    registerSkillsTools(this.server, this.env);
+  
     
-    
-
-   
-
-    console.log("CoreHR MCP Server initialization complete.");
+   console.log("CoreHR MCP Server initialization complete.");
   }
 }
 

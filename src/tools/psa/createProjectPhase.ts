@@ -2,6 +2,7 @@
 import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
+import { handleApiError } from "../common/errorHandler";
 
 /** 1️⃣ Path‐params schema */
 export const createProjectPhasePath = z
@@ -43,9 +44,7 @@ export async function createProjectPhase(
   });
 
   if (!res.ok) {
-    throw new Error(
-      `POST ${url.toString()} failed: ${res.status} ${res.statusText}`
-    );
+    await handleApiError(res, "POST", url.toString());
   }
   return res.json();
 }

@@ -2,6 +2,7 @@
 import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
+import { handleApiError } from "../common/errorHandler";
 
 /** 1️⃣ Path‐params schema */
 export const getClientPath = z
@@ -30,9 +31,7 @@ export async function getClient(
   });
 
   if (!res.ok) {
-    throw new Error(
-      `GET ${url} failed: ${res.status} ${res.statusText}`
-    );
+    await handleApiError(res, "GET", url);
   }
   return res.json();
 }

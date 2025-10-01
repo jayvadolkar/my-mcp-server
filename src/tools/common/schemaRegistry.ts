@@ -7,6 +7,8 @@ import * as corehrm from "../corehr/corehrResponseSchemas";
 import * as attend from "../attendance/attendanceResponseSchemas"
 import * as payroll from "../payroll/payrollResponseSchemas"
 import * as psa from "../psa/psaResponseSchema"
+import * as expense from "../expense/expenseResponseSchemas"
+import * as pms from "../pms/pmsResponseSchemas"
 
 const registry: Record<string, ZodSchema> = {
   //leave
@@ -85,7 +87,7 @@ const registry: Record<string, ZodSchema> = {
   getTaxGroupsResponse:              psa.getTaxGroupsResponseSchema,
   getProjectPhasesResponse:          psa.getProjectPhasesResponseSchema,
   createProjectPhaseResponse:        psa.createProjectPhaseResponseSchema,
-  getProjectsResponse:               psa.getProjectsResponseSchema,
+  getProjectsResponse:               psa.getProjectTasksResponseSchema,
   createProjectResponse:             psa.createProjectResponseSchema,
   getProjectByIdResponse:            psa.getProjectByIdResponseSchema,
   updateProjectResponse:             psa.updateProjectResponseSchema,
@@ -97,7 +99,62 @@ const registry: Record<string, ZodSchema> = {
   createProjectTaskResponse:         psa.createProjectTaskResponseSchema,
   updateProjectTaskResponse:         psa.updateProjectTaskResponseSchema,
   getProjectTaskTimeEntriesResponse: psa.getProjectTaskTimeEntriesResponseSchema,
-  
+
+  // expense
+  expenseCategoriesResponse:       expense.expenseCategoryPagedResponseSchema,
+  expenseClaimsResponse:           expense.expenseClaimPagedResponseSchema,
+  expensePoliciesResponse:         expense.apiLookupPagedResponseSchema,
+  advanceRequestsResponse:         expense.advancesRequestDtoResponseSchema,
+  expenseAttachmentUrlResponse:    expense.documentFileUrlResponseSchema,
+  stringResponse:                  expense.stringResponseSchema,
+  booleanResponse:                 expense.booleanResponseSchema,
+  expenseSchema:                   expense.expenseSchema,
+  expenseCategorySchema:           expense.expenseCategorySchema,
+  expenseClaimSchema:              expense.expenseClaimSchema,
+  advanceExpenseSchema:            expense.advanceExpenseSchema,
+  advancesRequestSchema:           expense.advancesRequestSchema,
+  linkedEntitySchema:              expense.linkedEntitySchema,
+  customFieldSchema:               expense.customFieldSchema,
+  fileAttachmentSchema:            expense.fileAttachmentSchema,
+  expenseClaimApprovalStatus:      expense.ExpenseClaimApprovalStatus,
+  expenseLinkableEntityType:       expense.ExpenseLinkableEntityType,
+  expenseType:                     expense.ExpenseType,
+  expenseClaimPaymentStatus:       expense.ExpenseClaimPaymentStatus,
+  expenseRequestStatus:            expense.ExpenseRequestStatus,
+  expenseBookingStatus:            expense.ExpenseBookingStatus,
+  fieldType:                       expense.FieldType,
+  expenseClaimUpdateDto:           expense.expenseClaimUpdateDtoSchema,
+
+  // pms (Performance Management System)
+  timeFramesResponse:               pms.apiTimeFramePagedResponseSchema,
+  goalsResponse:                    pms.apiGoalPagedResponseSchema,
+  updateGoalProgressResponse:       pms.booleanResponseSchema,
+  badgesResponse:                   pms.apiBadgePagedResponseSchema,
+  praiseResponse:                   pms.apiPraisePagedResponseSchema,
+  addPraiseResponse:                pms.stringResponseSchema,
+  reviewGroupsResponse:             pms.apiReviewGroupPagedResponseSchema,
+  reviewCyclesResponse:             pms.apiReviewCyclePagedResponseSchema,
+  reviewsResponse:                  pms.apiEmployeeReviewPagedResponseSchema,
+  timeFrameSchema:                  pms.apiTimeFrameSchema,
+  baseGoalSchema:                   pms.apiBaseGoalSchema,
+  goalSchema:                       pms.apiGoalSchema,
+  badgeSchema:                      pms.apiBadgeSchema,
+  praiseSchema:                     pms.apiPraiseSchema,
+  reviewGroupSchema:                pms.apiReviewGroupSchema,
+  reviewCycleSchema:                pms.apiReviewCycleSchema,
+  employeeReviewSchema:             pms.apiEmployeeReviewSchema,
+  reviewRatingSchema:               pms.apiReviewRatingSchema,
+  employeeLookupSchema:             pms.apiEmployeeLookupSchema,
+  badgeLookupSchema:                pms.apiBadgeLookupSchema,
+  timeFrameStatus:                  pms.TimeFrameStatus,
+  frequency:                        pms.Frequency,
+  goalStatus:                       pms.GoalStatus,
+  goalMetricType:                   pms.GoalMetricType,
+  goalType:                         pms.GoalType,
+  badgeStatus:                      pms.BadgeStatus,
+  reviewStatus:                     pms.ReviewStatus,
+  updateGoalProgressDto:            pms.apiUpdateGoalProgressSchema,
+  addPraiseDto:                     pms.addPraiseSchema,
 
 };
 

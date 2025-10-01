@@ -2,12 +2,13 @@
 import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
+import { handleApiError } from "../common/errorHandler";
 
 /** 1️⃣ Query‐params schema */
 export const getAttendanceQuery = z
   .object({
     employeeIds: z
-      .string()
+      .string().uuid()
       .describe(
         "Comma-separated list of employee UUIDs (e.g. 'id1,id2,id3')"
       ),
@@ -58,9 +59,7 @@ export async function getAttendance(
     },
   });
   if (!res.ok) {
-    throw new Error(
-      `GET ${url.toString()} failed: ${res.status} ${res.statusText}`
-    );
+    await handleApiError(res, "GET", url.toString());
   }
   return res.json();
 }

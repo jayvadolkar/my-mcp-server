@@ -2,6 +2,7 @@
 import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
+import { handleApiError } from "../common/errorHandler";
 
 /** 1️⃣ Path‐params schema */
 export const getProjectByIdPath = z
@@ -30,7 +31,7 @@ export async function getProjectById(
   });
 
   if (!res.ok) {
-    throw new Error(`GET ${url} failed: ${res.status} ${res.statusText}`);
+    await handleApiError(res, "GET", url);
   }
   return res.json();
 }

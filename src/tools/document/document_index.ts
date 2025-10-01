@@ -4,7 +4,7 @@ import { Env } from "../../index";
 import { getAllDocumentTypes, getAllDocumentTypesQuery } from "./getAllDocumentTypes";
 import { getEmployeeDocumentAttachmentDownloadUrl, getEmployeeDocumentAttachmentDownloadUrlParams} from "./getEmployeeDocumentAttachmentDownloadUrl";
 import { getEmployeeDocuments, getEmployeeDocumentsParams, getEmployeeDocumentsQuery} from "./getEmployeeDocuments";
-import { uploadEmployeeDocuments, uploadEmployeeDocumentsParams} from "./uploadEmployeeDocuments";
+//import { uploadEmployeeDocuments, uploadEmployeeDocumentsParams} from "./uploadEmployeeDocuments";
 
 
 export function registerDocumentTools(server: McpServer, env: Env) {
@@ -86,7 +86,7 @@ export function registerDocumentTools(server: McpServer, env: Env) {
       }
     }
   );
-    // ── POST /hris/employees/{employeeId}/documenttypes/{documentTypeId} ─────────────
+    /** ── POST /hris/employees/{employeeId}/documenttypes/{documentTypeId} ─────────────
   server.tool(
     "uploadEmployeeDocuments",
     "This tool can be used to upload documents for an employee",
@@ -111,5 +111,5 @@ export function registerDocumentTools(server: McpServer, env: Env) {
         };
       }
     }
-  );
+  ); */
 }

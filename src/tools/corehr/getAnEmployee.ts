@@ -2,6 +2,7 @@
 import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
+import { handleApiError } from "../common/errorHandler";
 
 // 📦 Path params schema
 export const getEmployeeParams = z.object({

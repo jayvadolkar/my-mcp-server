@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
+import { handleApiError } from "../common/errorHandler";
 
 
 // 1️⃣ Define the exact shape of the POST body
@@ -21,7 +22,7 @@ export const createEmployeeSchema = z.object({
   secondaryJobTitle:z.string().optional().describe("Secondary title (if any) UUID or identifier. If name provided, we have to call the get all job titles API to get the UUID"),
   location:         z.string().describe("Office location UUID or identifier. If name provided, we have to call the get all locations API to get the UUID"),
   legalEntity:      z.string().describe("Legal entity UUID or identifier. If name provided, we have to call the get all groups API to get the UUID"),
-  nationality:      z.string().describe("Nationality"),
+  nationality:      z.string().describe("Nationality. take it as 2 digit country code. for eg IN for India, US for United States, etc"),
 });
 
 /**
@@ -35,7 +36,7 @@ export async function createEmployee(
   const baseUrl = `https://${env.COMPANY}.${env.ENVIRONMENT}.com/api/v1`;
   const url = new URL(`${baseUrl}/hris/employees`);
 
-  const res = await fetch(url, {
+  const res = await fetch(url.toString(), {
     method: "POST",
     headers: {
       "Accept":        "application/json",
@@ -46,7 +47,7 @@ export async function createEmployee(
   });
 
   if (!res.ok) {
-    throw new Error(`POST ${url} failed: ${res.status} ${res.statusText}`);
+    await handleApiError(res, "POST", url.toString());
   }
   return res.json();
 }

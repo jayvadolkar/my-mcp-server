@@ -2,6 +2,7 @@
 import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
+import { handleApiError } from "../common/errorHandler";
 
 /** 1️⃣ Params schema (no params) */
 export const getSalaryComponentsParams = z
@@ -23,9 +24,7 @@ export async function getSalaryComponents(env: Env) {
   });
 
   if (!res.ok) {
-    throw new Error(
-      `GET ${url} failed: ${res.status} ${res.statusText}`
-    );
+    await handleApiError(res, "GET", url);
   }
   return res.json();
 }

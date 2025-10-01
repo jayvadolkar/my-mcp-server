@@ -2,6 +2,7 @@
 import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
+import { handleApiError } from "../common/errorHandler";
 
 /** 1️⃣ Query‐params schema */
 export const getLeaveRequestsQuery = z
@@ -17,7 +18,7 @@ export const getLeaveRequestsQuery = z
     to: z
       .string()
       .optional()
-      .describe("ISO 8601 end date/time"),
+      .describe("ISO 8601 end date/time. the to date can be max 90 days from the from date"),
     pageNumber: z
       .coerce
       .number()
@@ -59,9 +60,7 @@ export async function getLeaveRequests(
   });
 
   if (!res.ok) {
-    throw new Error(
-      `GET ${url.toString()} failed: ${res.status} ${res.statusText}`
-    );
+    await handleApiError(res, "GET", url.toString());
   }
   return res.json();
 }

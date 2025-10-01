@@ -2,6 +2,7 @@
 import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
+import { handleApiError } from "../common/errorHandler";
 
 /** 1️⃣ Path‐params schema */
 export const updateProjectTaskPath = z
@@ -48,7 +49,7 @@ export async function updateProjectTask(
   });
 
   if (!res.ok) {
-    throw new Error(`PUT ${url} failed: ${res.status} ${res.statusText}`);
+    await handleApiError(res, "PUT", url);
   }
   return res.json();
 }

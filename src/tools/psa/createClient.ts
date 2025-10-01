@@ -2,6 +2,7 @@
 import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
+import { handleApiError } from "../common/errorHandler";
 
 /** 1️⃣ Body‐params schema */
 export const createClientBody = z
@@ -51,7 +52,7 @@ export async function createClient(
   });
 
   if (!res.ok) {
-    throw new Error(`POST ${url} failed: ${res.status} ${res.statusText}`);
+    await handleApiError(res, "POST", url);
   }
   return res.json();
 }

@@ -2,6 +2,7 @@
 import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
+import { handleApiError } from "../common/errorHandler";
 
 /** 1️⃣ Query‐params schema */
 export const updateFieldsQuery = 
@@ -35,9 +36,7 @@ export async function getUpdateFields(
   });
 
   if (!res.ok) {
-    throw new Error(
-      `GET ${url.toString()} failed: ${res.status} ${res.statusText}`
-    );
+    await handleApiError(res, "GET", url.toString());
   }
   return res.json(); // caller can JSON.stringify or further parse
 }

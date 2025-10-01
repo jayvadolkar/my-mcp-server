@@ -2,6 +2,7 @@
 import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
+import { handleApiError } from "../common/errorHandler";
 
 /** 1️⃣ Path‐params schema */
 export const addEmployeeSalaryPath = z
@@ -79,7 +80,7 @@ export async function addEmployeeSalary(
   });
 
   if (!res.ok) {
-    throw new Error(`POST ${url} failed: ${res.status} ${res.statusText}`);
+    await handleApiError(res, "POST", url);
   }
   return res.json();
 }

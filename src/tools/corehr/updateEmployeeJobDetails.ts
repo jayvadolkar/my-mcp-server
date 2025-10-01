@@ -2,6 +2,7 @@
 import { z } from "zod";
 import { getAuthToken } from "../../auth";
 import { Env } from "../../index";
+import { handleApiError } from "../common/errorHandler";
 
 /** 1️⃣ Path‐param schema */
 export const updateJobDetailsParams = z.object({
@@ -61,7 +62,7 @@ export async function updateJobDetails(
   });
 
   if (!res.ok) {
-    throw new Error(`PUT ${url} failed: ${res.status} ${res.statusText}`);
+    await handleApiError(res, "PUT", url);
   }
   // According to spec, returns BooleanResponse { succeeded, message?, errors?, data }
   return res.json();

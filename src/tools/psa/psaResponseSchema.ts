@@ -153,7 +153,7 @@ const invoiceSchema = z
     paymentTerm:       z.string(),
     amount:            z.number(),
     discount:          z.number(),
-    taxId:             z.string().uuid(),
+    taxId:             z.string().uuid().describe(""),
     taxGroupId:        z.string().uuid(),
     currency:          z.string(),
     status:            z.number().int(),
@@ -219,7 +219,7 @@ const projectManagerSchema = z
   .object({ id: z.string().uuid(), firstName: z.string(), lastName: z.string(), email: z.string().email() });
 const projectSchema = z
   .object({
-    id:               z.string().uuid(),
+    id:               z.string().uuid("this the the project id. this is used "),
     clientId:         z.string().uuid(),
     name:             z.string(),
     code:             z.string(),
@@ -236,7 +236,7 @@ const projectSchema = z
   })
   .describe("One PSA project record");
 
-export const getProjectsResponseSchema = paginationWrapper(projectSchema)
+export const ResponseSchema = paginationWrapper(projectSchema)
   .describe("GET /psa/projects");
 
 /** 1️⃣4️⃣ Create project response (data = project UUID) */
