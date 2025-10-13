@@ -17,6 +17,9 @@ import { registerPsaTools } from "./tools/psa/psa_index";
 import { registerExpenseTools } from "./tools/expense/expense_index";
 import { registerPmsTools } from "./tools/pms/pms_index";
 import { registerSkillsTools } from "./tools/skills/skills_index";
+import { registerAssetsTools } from "./tools/assets/assets_index";
+import { registerRequisitionTools } from "./tools/requisition/requisition_index";
+import { registerHelpdeskTools } from "./tools/helpdesk/helpdesk_index";
 
 
 
@@ -66,6 +69,9 @@ export class MyMCP extends McpAgent<Env> {
     registerExpenseTools(this.server, this.env);
     registerPmsTools(this.server, this.env);
     registerSkillsTools(this.server, this.env);
+    registerAssetsTools(this.server, this.env);
+    registerRequisitionTools(this.server, this.env);
+    registerHelpdeskTools(this.server, this.env);
   
     
    console.log("CoreHR MCP Server initialization complete.");
